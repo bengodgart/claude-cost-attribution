@@ -1,0 +1,13 @@
+{
+  "_comment": "Editable pricing config. USD per million tokens (MTok), base input/output rate per model. Cache multipliers apply on top of the base input rate and are stable across Claude models per Anthropic's prompt-caching docs. Snapshot below is dated; check https://www.anthropic.com/pricing and edit the numbers, no code changes needed. This file is read fresh on every run, so a price change never requires a new release.",
+  "as_of": "2026-07",
+  "cache_write_1h_multiplier": 2.0,
+  "cache_write_5m_multiplier": 1.25,
+  "cache_read_multiplier": 0.1,
+  "models": [
+    { "name": "opus", "match": ["opus"], "input": 15.0, "output": 75.0 },
+    { "name": "sonnet", "match": ["sonnet"], "input": 3.0, "output": 15.0 },
+    { "name": "haiku", "match": ["haiku"], "input": 0.8, "output": 4.0 }
+  ],
+  "default_model": { "name": "unmatched", "input": 3.0, "output": 15.0 }
+}
