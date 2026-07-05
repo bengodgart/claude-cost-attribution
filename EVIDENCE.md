@@ -1,4 +1,4 @@
-# Evidence — claude-cost-attribution ship gate
+# Evidence: claude-cost-attribution ship gate
 
 All commands run from `C:\dev\claude-cost-attribution`. Python 3.14.4, pytest 9.1.1, stdlib only for the tool itself. All runs are against the bundled `fixtures/` transcripts, never a real `~/.claude/projects` directory.
 
@@ -8,7 +8,7 @@ All commands run from `C:\dev\claude-cost-attribution`. Python 3.14.4, pytest 9.
 $ python -m pytest tests/ -v
 
 ============================= test session starts =============================
-platform win32 -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Asus PC\AppData\Local\Programs\Python\Python314\python.exe
+platform win32 -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\<user>\AppData\Local\Programs\Python\Python314\python.exe
 cachedir: .pytest_cache
 rootdir: C:\dev\claude-cost-attribution
 configfile: pyproject.toml
@@ -44,38 +44,38 @@ root: fixtures/claude_projects/-P-demo-tutor
 pricing: pricing.json (repo root)
 sessions parsed: 1   subagent runs: 2
 
-TOTAL cost, cache-aware:       $0.8528
-TOTAL cost, naive (no cache):  $0.8823  (+3% vs cache-aware)
+TOTAL cost, cache-aware:       $0.3438
+TOTAL cost, naive (no cache):  $0.3785  (+10% vs cache-aware)
   input 30,000  cache-write-1h 14,000  cache-write-5m 2,000  cache-read 30,000  output 4,100
 
 Cost by project
-       $0.8528   100%  [############################]  C:\Users\demo\dev\demo-tutor-app  (8 turns)
+       $0.3438   100%  [############################]  C:\Users\demo\dev\demo-tutor-app  (8 turns)
 
 Cost by skill (heuristic span: active from the turn after a Skill call to the next one)
-       $0.5910    69%  [###################---------]  generate-guide
-       $0.2390    28%  [########--------------------]  (no skill)
-       $0.0228     3%  [#---------------------------]  pretty-guide
+       $0.2060    60%  [#################-----------]  generate-guide
+       $0.1150    33%  [#########-------------------]  (no skill)
+       $0.0228     7%  [##--------------------------]  pretty-guide
   reconciles to total: yes
 
 Cost by subagent (agentType from .meta.json - hard signal, not heuristic)
-       $0.6612    78%  [######################------]  (main session, no subagent)
-       $0.1875    22%  [######----------------------]  executor
-       $0.0041     0%  [----------------------------]  general-purpose
+       $0.2762    80%  [######################------]  (main session, no subagent)
+       $0.0625    18%  [#####-----------------------]  executor
+       $0.0051     1%  [----------------------------]  general-purpose
   reconciles to total: yes
 
 Burn-rate gauge
   trailing 7-day window: 2026-05-30 14:05:00+00:00 to 2026-06-06 14:05:00+00:00
-  spend in window: $0.8528
-  daily rate: $0.1636/day (over 5.21 elapsed days)
-  weekly cap: $5.0000 (user-supplied)  -  17% of cap used
-  at the current daily rate: cap reached in 30.6 days
+  spend in window: $0.3438
+  daily rate: $0.0660/day (over 5.21 elapsed days)
+  weekly cap: $5.0000 (user-supplied)  -  7% of cap used
+  at the current daily rate: cap reached in 75.8 days
 ```
 
 **Exit code: 0.** Committed copies of this same run: `examples/sample-report.md`, `examples/sample-report.html`.
 
-## 3. Hand-check A — cache-aware total on one fixture transcript
+## 3. Hand-check A: cache-aware total on one fixture transcript
 
-Transcript: `fixtures/claude_projects/-P-demo-tutor/session-aaaa1111.jsonl` (the main transcript only, its 6 assistant/usage lines, excluding the two subagent files). Rates from `pricing.json`: opus $15/$75 per MTok, sonnet $3/$15 per MTok, cache-write-1h x2.0, cache-write-5m x1.25, cache-read x0.1.
+Transcript: `fixtures/claude_projects/-P-demo-tutor/session-aaaa1111.jsonl` (the main transcript only, its 6 assistant/usage lines, excluding the two subagent files). Rates from `pricing.json`: opus $5/$25 per MTok, sonnet $3/$15 per MTok, cache-write-1h x2.0, cache-write-5m x1.25, cache-read x0.1.
 
 Formula: `with_cache = (input*in_rate + cache_1h*in_rate*2.0 + cache_5m*in_rate*1.25 + cache_read*in_rate*0.1 + output*out_rate) / 1,000,000`
 
@@ -83,32 +83,32 @@ Formula: `with_cache = (input*in_rate + cache_1h*in_rate*2.0 + cache_5m*in_rate*
 |---|---|---|---|---|---|---|---|
 | E1 | sonnet | 10,000 | 0 | 0 | 0 | 500 | (10000*3 + 500*15)/1e6 = **0.0375** |
 | E2 | sonnet | 2,000 | 0 | 0 | 8,000 | 100 | (2000*3 + 8000*3*0.1 + 100*15)/1e6 = **0.0099** |
-| E3 | opus | 5,000 | 10,000 | 0 | 0 | 1,000 | (5000*15 + 10000*15*2.0 + 1000*75)/1e6 = **0.4500** |
-| E4 | opus | 3,000 | 0 | 0 | 15,000 | 800 | (3000*15 + 15000*15*0.1 + 800*75)/1e6 = **0.1275** |
+| E3 | opus | 5,000 | 10,000 | 0 | 0 | 1,000 | (5000*5 + 10000*5*2.0 + 1000*25)/1e6 = **0.1500** |
+| E4 | opus | 3,000 | 0 | 0 | 15,000 | 800 | (3000*5 + 15000*5*0.1 + 800*25)/1e6 = **0.0425** |
 | E5 | sonnet | 1,000 | 0 | 2,000 | 0 | 200 | (1000*3 + 2000*3*1.25 + 200*15)/1e6 = **0.0135** |
 | E6 | sonnet | 4,000 | 0 | 0 | 6,000 | 600 | (4000*3 + 6000*3*0.1 + 600*15)/1e6 = **0.0228** |
 
-Manual sum: `0.0375 + 0.0099 + 0.4500 + 0.1275 + 0.0135 + 0.0228 = 0.6612`
+Manual sum: `0.0375 + 0.0099 + 0.1500 + 0.0425 + 0.0135 + 0.0228 = 0.2762`
 
-Cross-check against the tool's own output: the "Cost by subagent" table above reports `(main session, no subagent) = $0.6612` — the exact main-transcript-only total, matching the hand sum to the last cent. Also asserted in `tests/test_ccat.py::test_main_session_and_subagent_sums_match_hand_check`.
+Cross-check against the tool's own output: the "Cost by subagent" table above reports `(main session, no subagent) = $0.2762`, the exact main-transcript-only total, matching the hand sum to the last cent. Also asserted in `tests/test_ccat.py::test_main_session_and_subagent_sums_match_hand_check`.
 
-## 4. Hand-check B — per-skill split sums to the project total (no lost tokens)
+## 4. Hand-check B: per-skill split sums to the project total (no lost tokens)
 
 From the same CLI run above, scoped to the single project `-P-demo-tutor`:
 
 ```
-TOTAL cost, cache-aware: $0.8528
+TOTAL cost, cache-aware: $0.3438
 
-generate-guide  $0.5910
-(no skill)      $0.2390
+generate-guide  $0.2060
+(no skill)      $0.1150
 pretty-guide    $0.0228
 -----------------------
-sum             $0.8528
+sum             $0.3438
 ```
 
-`0.5910 + 0.2390 + 0.0228 = 0.8528`, exactly the project total printed on the same run. Nothing is missing and nothing double-counted: the `(no skill)` row exists explicitly rather than folding those turns into either named skill. Enforced by `tests/test_ccat.py::test_per_skill_split_reconciles_to_total_no_lost_tokens`, which checks this equality directly with `attribution.reconciles()` rather than eyeballing rounded printed numbers.
+`0.2060 + 0.1150 + 0.0228 = 0.3438`, exactly the project total printed on the same run. Nothing is missing and nothing double-counted: the `(no skill)` row exists explicitly rather than folding those turns into either named skill. Enforced by `tests/test_ccat.py::test_per_skill_split_reconciles_to_total_no_lost_tokens`, which checks this equality directly with `attribution.reconciles()` rather than eyeballing rounded printed numbers.
 
-The per-subagent split reconciles the same way (`$0.6612 + $0.1875 + $0.0041 = $0.8528`), covered by `test_per_subagent_split_reconciles_to_total_no_lost_tokens`.
+The per-subagent split reconciles the same way (`$0.2762 + $0.0625 + $0.0051 = $0.3438`), covered by `test_per_subagent_split_reconciles_to_total_no_lost_tokens`.
 
 ## Honest gaps (named, not hidden)
 

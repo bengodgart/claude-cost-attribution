@@ -7,23 +7,23 @@ Claude Code Pro and Max plans ship no cost dashboard. Anthropic's own issue trac
 ```
 $ python -m ccat report fixtures/claude_projects/-P-demo-tutor --weekly-cap 5.00
 
-TOTAL cost, cache-aware:       $0.8528
-TOTAL cost, naive (no cache):  $0.8823  (+3% vs cache-aware)
+TOTAL cost, cache-aware:       $0.3438
+TOTAL cost, naive (no cache):  $0.3785  (+10% vs cache-aware)
 
 Cost by skill (heuristic span: active from the turn after a Skill call to the next one)
-       $0.5910    69%  [###################---------]  generate-guide
-       $0.2390    28%  [########--------------------]  (no skill)
-       $0.0228     3%  [#---------------------------]  pretty-guide
+       $0.2060    60%  [#################-----------]  generate-guide
+       $0.1150    33%  [#########-------------------]  (no skill)
+       $0.0228     7%  [##--------------------------]  pretty-guide
   reconciles to total: yes
 
 Cost by subagent (agentType from .meta.json - hard signal, not heuristic)
-       $0.6612    78%  [######################------]  (main session, no subagent)
-       $0.1875    22%  [######----------------------]  executor
-       $0.0041     0%  [----------------------------]  general-purpose
+       $0.2762    80%  [######################------]  (main session, no subagent)
+       $0.0625    18%  [#####-----------------------]  executor
+       $0.0051     1%  [----------------------------]  general-purpose
   reconciles to total: yes
 ```
 
-That is a real run against the bundled fixture session, not a cherry-picked number. One skill (`generate-guide`) accounted for 69% of this session's cost. Ignoring the cache discount entirely would have overstated the bill by 3%. Neither fact was visible from the raw transcript until something read it this way.
+That is a real run against the bundled fixture session, not a cherry-picked number. One skill (`generate-guide`) accounted for 60% of this session's cost. Ignoring the cache discount entirely would have overstated the bill by 10%. Neither fact was visible from the raw transcript until something read it this way.
 
 ## Quickstart (3 commands)
 

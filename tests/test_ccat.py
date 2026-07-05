@@ -32,10 +32,10 @@ def _pricing():
 
 def test_cache_aware_cost_hand_check_opus_cache_write():
     # fixture event E3: opus, input 5000, cache_creation_1h 10000, output 1000
-    # with_cache = (5000*15 + 10000*15*2.0 + 1000*75) / 1e6 = 450000/1e6
+    # with_cache = (5000*5 + 10000*5*2.0 + 1000*25) / 1e6 = 150000/1e6
     breakdown = cost_for_event(_pricing(), "claude-opus-4-8", 5000, 10000, 0, 0, 1000)
     assert breakdown.matched_model is True
-    assert breakdown.with_cache == pytest.approx(0.45, rel=1e-9)
+    assert breakdown.with_cache == pytest.approx(0.15, rel=1e-9)
 
 
 def test_naive_cost_hand_check_sonnet_cache_read():
@@ -103,7 +103,7 @@ def test_cache_aware_total_matches_manual_sum_of_all_events():
     # EVIDENCE.md against the same pricing.json rates.
     result = parse_root(TUTOR)
     a = attribute(result.events, _pricing())
-    assert a.total.with_cache == pytest.approx(0.85278, rel=1e-6)
+    assert a.total.with_cache == pytest.approx(0.3438, rel=1e-6)
 
 
 def test_main_session_and_subagent_sums_match_hand_check():
@@ -111,8 +111,8 @@ def test_main_session_and_subagent_sums_match_hand_check():
     a = attribute(result.events, _pricing())
     main_only = sum(pe.with_cache for pe in a.priced_events if pe.event.source == "main")
     subagent_only = sum(pe.with_cache for pe in a.priced_events if pe.event.source == "subagent")
-    assert main_only == pytest.approx(0.6612, rel=1e-6)
-    assert subagent_only == pytest.approx(0.19158, rel=1e-6)
+    assert main_only == pytest.approx(0.2762, rel=1e-6)
+    assert subagent_only == pytest.approx(0.0676, rel=1e-6)
     assert main_only + subagent_only == pytest.approx(a.total.with_cache, rel=1e-9)
 
 
@@ -123,8 +123,8 @@ def test_per_skill_split_reconciles_to_total_no_lost_tokens():
     assert NO_SKILL in a.by_skill
     assert "generate-guide" in a.by_skill
     assert "pretty-guide" in a.by_skill
-    assert a.by_skill[NO_SKILL].with_cache == pytest.approx(0.23898, rel=1e-6)
-    assert a.by_skill["generate-guide"].with_cache == pytest.approx(0.591, rel=1e-6)
+    assert a.by_skill[NO_SKILL].with_cache == pytest.approx(0.115, rel=1e-6)
+    assert a.by_skill["generate-guide"].with_cache == pytest.approx(0.206, rel=1e-6)
     assert a.by_skill["pretty-guide"].with_cache == pytest.approx(0.0228, rel=1e-6)
 
 
@@ -135,8 +135,8 @@ def test_per_subagent_split_reconciles_to_total_no_lost_tokens():
     assert MAIN_SESSION in a.by_agent_type
     assert "executor" in a.by_agent_type
     assert "general-purpose" in a.by_agent_type
-    assert a.by_agent_type["executor"].with_cache == pytest.approx(0.1875, rel=1e-6)
-    assert a.by_agent_type["general-purpose"].with_cache == pytest.approx(0.00408, rel=1e-6)
+    assert a.by_agent_type["executor"].with_cache == pytest.approx(0.0625, rel=1e-6)
+    assert a.by_agent_type["general-purpose"].with_cache == pytest.approx(0.0051, rel=1e-6)
 
 
 def test_per_project_split_reconciles_across_multiple_projects():
@@ -146,7 +146,7 @@ def test_per_project_split_reconciles_across_multiple_projects():
     assert len(a.by_project) == 2
     tutor_bucket = a.by_project["C:\\Users\\demo\\dev\\demo-tutor-app"]
     other_bucket = a.by_project["C:\\Users\\demo\\dev\\demo-other-app"]
-    assert tutor_bucket.with_cache == pytest.approx(0.85278, rel=1e-6)
+    assert tutor_bucket.with_cache == pytest.approx(0.3438, rel=1e-6)
     assert other_bucket.with_cache == pytest.approx(0.00855, rel=1e-6)
 
 

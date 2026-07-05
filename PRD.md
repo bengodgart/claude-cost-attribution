@@ -14,7 +14,7 @@
 | Attribution by skill invocation, explicit when the signal is absent | `ccat/parser.py` skill-span heuristic (documented as a heuristic everywhere it surfaces) + `NO_SKILL` bucket in every report; never a silent "other" |
 | Attribution by subagent/Task | `ccat/parser.py` reads Claude Code's own `subagents/agent-*.jsonl` + `.meta.json` files (a hard signal, not inferred) -> `MAIN_SESSION` bucket for everything outside a subagent run |
 | Burn-rate gauge: rolling spend vs a configurable weekly cap, days-to-cap at current rate | `ccat/burnrate.py::compute_burn_rate`; cap is a CLI flag (`--weekly-cap`), never scraped |
-| One report: top-N costliest + burn gauge, terminal + optional HTML; README opens with a real number | `ccat/report.py` (text/markdown/HTML); `README.md` opens with the fixture run's real 69%/3% numbers |
+| One report: top-N costliest + burn gauge, terminal + optional HTML; README opens with a real number | `ccat/report.py` (text/markdown/HTML); `README.md` opens with the fixture run's real 60%/10% numbers |
 | Editable local pricing config, no network | `pricing.json` at repo root, loaded fresh every run by `ccat/pricing.py::load_pricing` |
 
 ## Non-goals (do not build - from brief 08)
@@ -30,7 +30,7 @@ A hosted dashboard, accounts, live telemetry, uploading transcripts anywhere, sc
 
 ## Demo path (stranger sees value in under 2 minutes)
 
-Clone -> `python -m ccat report fixtures/claude_projects/-P-demo-tutor --weekly-cap 5.00` -> see the cache-aware vs naive total, the skill split (one skill at 69%), the subagent split, and the burn gauge. Then point it at `~/.claude/projects` to audit a real setup, still at $0, still offline.
+Clone -> `python -m ccat report fixtures/claude_projects/-P-demo-tutor --weekly-cap 5.00` -> see the cache-aware vs naive total, the skill split (one skill at 60%), the subagent split, and the burn gauge. Then point it at `~/.claude/projects` to audit a real setup, still at $0, still offline.
 
 ## Done when
 
